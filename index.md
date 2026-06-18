@@ -11,21 +11,22 @@ title: 2026 Ballot Guide
     --sunrise-orange: #fd9014;
     --sunrise-maroon: #8f0d56;
 
-    --bg: var(--sunrise-sage);
+    --denver-sky-blue: #0096d6;
+    --denver-white: #ffffff;
+    --denver-red: #bf0a30;
+
+    --bg: var(--denver-white);
     --ink: var(--sunrise-charcoal);
     --muted: #5d6258;
     --line: #c9d5c3;
     --accent: var(--sunrise-orange);
     --accent-soft: #f9f1bc;
-    --accent-strong: var(--sunrise-maroon);
+    --accent-strong: var(--denver-red);
     --gold-light: var(--sunrise-gold);
   }
 
   body {
-    background:
-      radial-gradient(circle at top right, rgba(255, 222, 22, 0.26) 0%, transparent 30%),
-      radial-gradient(circle at bottom left, rgba(253, 144, 20, 0.12) 0%, transparent 35%),
-      linear-gradient(180deg, #f7fbf3 0%, var(--bg) 55%, #eef5e8 100%);
+    background: var(--bg);
     color: var(--ink);
   }
 
@@ -39,9 +40,14 @@ title: 2026 Ballot Guide
     margin-bottom: 0.8rem;
   }
 
+  .sheet-note-emphasis {
+    margin-top: -0.35rem;
+    margin-bottom: 0.95rem;
+  }
+
   .sheet-status {
     padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, var(--accent-soft), #ffffff);
+    background: linear-gradient(90deg, var(--accent-soft), var(--denver-white));
     border-left: 4px solid var(--accent-strong);
     border-radius: 6px;
     margin-bottom: 0.8rem;
@@ -52,7 +58,7 @@ title: 2026 Ballot Guide
     border-radius: 10px;
     overflow-x: auto;
     overflow-y: hidden;
-    background: #ffffff;
+    background: var(--denver-white);
     box-shadow: 0 2px 8px rgba(51, 52, 46, 0.08);
   }
 
@@ -96,7 +102,7 @@ title: 2026 Ballot Guide
   }
 
   tbody td {
-    background: #ffffff;
+    background: var(--denver-white);
     font-size: 0.97rem;
     color: var(--ink);
   }
@@ -110,14 +116,14 @@ title: 2026 Ballot Guide
   }
 
   .candidate-link {
-    color: #0b57d0;
+    color: var(--denver-sky-blue);
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
   .candidate-link:hover {
-    color: #083b8f;
+    color: var(--denver-red);
   }
 
   @media (max-width: 768px) {
@@ -142,8 +148,10 @@ title: 2026 Ballot Guide
 ## Live Candidate Responses
 
 <p class="sheet-note">
-Candidate names open a profile page with additional details. Scroll horizontally to view all policy response columns.
+To assess and platform more even more candidates, Sunrise Movement volunteers in the Denver area asked candidates to answer a series of questions, which have been summarized here to give voter's a fast and simple way to be informed.
 </p>
+
+<p class="sheet-note sheet-note-emphasis"><em>Candidate names open a profile page with additional details. Scroll horizontally to view all policy response columns.</em></p>
 
 <div class="sheet-wrap">
   <div id="sheet-status" class="sheet-status">Loading latest data...</div>
