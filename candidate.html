@@ -4,6 +4,10 @@ title: Candidate Profile
 ---
 
 <style>
+  :root {
+    --denver-white: #ffffff;
+  }
+
   .profile-wrap {
     max-width: 920px;
     margin-top: 1rem;
@@ -12,14 +16,14 @@ title: Candidate Profile
   .back-link {
     display: inline-block;
     margin-bottom: 1rem;
-    color: #0b57d0;
+    color: #0096d6;
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
   .profile-card {
-    background: #ffffff;
+    background: var(--denver-white);
     border: 1px solid #c9d5c3;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(51, 52, 46, 0.08);
@@ -67,8 +71,8 @@ title: Candidate Profile
 
   .profile-status {
     padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, #f9f1bc, #ffffff);
-    border-left: 4px solid #8f0d56;
+    background: linear-gradient(90deg, #f9f1bc, var(--denver-white));
+    border-left: 4px solid #bf0a30;
     border-radius: 6px;
     margin-bottom: 0.8rem;
   }

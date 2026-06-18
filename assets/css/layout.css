@@ -6,21 +6,22 @@
   --sunrise-orange: #fd9014;
   --sunrise-maroon: #8f0d56;
 
-  --bg: var(--sunrise-sage);
+  --denver-sky-blue: #0096d6;
+  --denver-white: #ffffff;
+  --denver-red: #bf0a30;
+
+  --bg: var(--denver-white);
   --ink: var(--sunrise-charcoal);
   --muted: #5d6258;
   --line: #c9d5c3;
   --accent: var(--sunrise-orange);
   --accent-soft: #f9f1bc;
-  --accent-strong: var(--sunrise-maroon);
+  --accent-strong: var(--denver-red);
   --gold-light: var(--sunrise-gold);
 }
 
 body {
-  background:
-    radial-gradient(circle at top right, rgba(255, 222, 22, 0.26) 0%, transparent 30%),
-    radial-gradient(circle at bottom left, rgba(253, 144, 20, 0.12) 0%, transparent 35%),
-    linear-gradient(180deg, #f7fbf3 0%, var(--bg) 55%, #eef5e8 100%);
+  background: var(--bg);
 }
 
 /* Full-width stacked layout */
@@ -71,7 +72,7 @@ body {
   margin: 0;
   font-size: 1.1rem;
   color: var(--muted);
-  max-width: 70ch;
+  max-width: 100%;
 }
 
 .site-content {
