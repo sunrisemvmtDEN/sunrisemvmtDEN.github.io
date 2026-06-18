@@ -30,6 +30,13 @@ title: 2026 Ballot Guide
     color: var(--ink);
   }
 
+  .site-content a,
+  .site-content a:visited,
+  .site-content a:hover,
+  .site-content a:focus {
+    color: var(--denver-sky-blue);
+  }
+
   .sheet-wrap {
     margin-top: 1rem;
   }
@@ -91,14 +98,9 @@ title: 2026 Ballot Guide
   }
 
   .endorsed-name a {
-    color: #0b57d0;
     text-decoration: underline;
     text-underline-offset: 2px;
     font-weight: 700;
-  }
-
-  .endorsed-name a:hover {
-    color: #083b8f;
   }
 
   .sheet-status {
@@ -179,7 +181,7 @@ title: 2026 Ballot Guide
   }
 
   .candidate-link:hover {
-    color: var(--denver-red);
+    color: var(--denver-sky-blue);
   }
 
   @media (max-width: 768px) {
@@ -215,17 +217,13 @@ title: 2026 Ballot Guide
 ## Endorsed Candidates
 
 <section class="endorsed-candidates">
-  <p class="endorsed-intro">Starting over a year ago, Sunrise Denver volunteers began keeping tabs on the primary races. After meeting with dozens of candidates, the Electoral subteam presented the following 3 candidates as endorsement recommendations- the Denver Hub voted unanimously to endorse each one. Our endorsement means we are pushing local Sunrisers to commit time and effort in aiding these campaigns success. This is why we limited to 3 endorsements. More candidates can be found in the next section.</p>
-  <div class="endorsed-grid">
-    {% for candidate in site.data.endorsed_candidates %}
-      <article class="endorsed-card">
-        <img class="endorsed-headshot" src="{{ candidate.headshot }}" alt="Headshot of {{ candidate.name | escape }}">
-        <div class="endorsed-content">
-          <h3 class="endorsed-name"><a href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">{{ candidate.name }}</a></h3>
-          <p>{{ candidate.description }}</p>
-        </div>
-      </article>
-    {% endfor %}
+  <p class="endorsed-intro">Starting over a year ago, Sunrise Denver volunteers began keeping tabs on the primary races. After meeting with dozens of candidates, the Electoral subteam presented the following 3 candidates as endorsement recommendations- the Denver Hub Members voted unanimously to endorse each one! 
+  </p>
+
+<p class="sheet-note sheet-note-emphasis"><em> Candidate names link to their pages. Our endorsement means we are pushing local Sunrisers to commit time and effort in aiding these campaigns success. This is why we limited to 3 endorsements. More awesome candidates can be found in the next section.</em></p>
+
+  <div class="endorsed-grid" id="endorsed-grid">
+    <p class="sheet-note">Loading endorsed candidates...</p>
   </div>
 </section>
 
@@ -248,6 +246,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   const localCsvPath = "{{ site.local_csv_path | escape }}";
   const csvUrl = "{{ site.google_sheet_csv_url | escape }}";
   const candidatePageUrl = "{{ '/candidate.html' | relative_url }}";
+  const endorsedCsvPath = "{{ '/data/endorsed_candidates.csv' | relative_url }}";
 
   function parseCsv(text) {
     const rows = [];
@@ -331,6 +330,92 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     }
 
     return escapeHtml(column.header || "");
+  }
+
+  function toUrl(value) {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) {
+      return "";
+    }
+
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+
+    if (trimmed.startsWith("/")) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  }
+
+  function buildEndorsedCandidates(rows) {
+    const grid = document.getElementById("endorsed-grid");
+    if (!grid) {
+      return;
+    }
+
+    if (!rows.length || rows.length < 2) {
+      grid.innerHTML = "<p class=\"sheet-note\">No endorsed candidates found.</p>";
+      return;
+    }
+
+    const headers = rows[0].map((h) => normalizeHeader(h));
+    const getValue = (row, key) => {
+      const idx = headers.indexOf(key);
+      return idx >= 0 ? (row[idx] || "") : "";
+    };
+
+    const cards = rows
+      .slice(1)
+      .filter((row) => row.some((cell) => String(cell || "").trim() !== ""))
+      .map((row) => {
+        const name = getValue(row, "name");
+        const url = toUrl(getValue(row, "url"));
+        const headshot = toUrl(getValue(row, "headshot"));
+        const description = getValue(row, "description");
+
+        const nameHtml = url
+          ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>`
+          : escapeHtml(name);
+
+        const imageHtml = headshot
+          ? `<img class="endorsed-headshot" src="${escapeHtml(headshot)}" alt="Headshot of ${escapeHtml(name)}">`
+          : "";
+
+        return `
+          <article class="endorsed-card">
+            ${imageHtml}
+            <div class="endorsed-content">
+              <h3 class="endorsed-name">${nameHtml}</h3>
+              <p>${escapeHtml(description)}</p>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+
+    grid.innerHTML = cards || "<p class=\"sheet-note\">No endorsed candidates found.</p>";
+  }
+
+  async function loadEndorsedCandidates() {
+    const grid = document.getElementById("endorsed-grid");
+    if (!grid) {
+      return;
+    }
+
+    try {
+      const res = await fetch(endorsedCsvPath, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const csvText = await res.text();
+      const rows = parseCsv(csvText);
+      buildEndorsedCandidates(rows);
+    } catch (err) {
+      grid.innerHTML = `<p class=\"sheet-note\">Could not load endorsed candidates (${escapeHtml(err.message)}).</p>`;
+    }
   }
 
   function buildTable(rows) {
@@ -424,5 +509,6 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     }
   }
 
+  loadEndorsedCandidates();
   loadSheet();
 </script>
