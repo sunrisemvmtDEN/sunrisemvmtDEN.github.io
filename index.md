@@ -103,14 +103,6 @@ title: 2026 Ballot Guide
     font-weight: 700;
   }
 
-  .sheet-status {
-    padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, var(--accent-soft), var(--denver-white));
-    border-left: 4px solid var(--accent-strong);
-    border-radius: 6px;
-    margin-bottom: 0.8rem;
-  }
-
   .table-shell {
     border: 1px solid var(--line);
     border-radius: 10px;
@@ -236,7 +228,6 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 <p class="sheet-note sheet-note-emphasis"><em>Candidate names open a profile page with additional details. Scroll horizontally to view all policy response columns.</em></p>
 
 <div class="sheet-wrap">
-  <div id="sheet-status" class="sheet-status">Loading latest data...</div>
   <div class="table-shell">
     <table id="sheet-table" aria-label="Candidate responses table"></table>
   </div>
@@ -420,10 +411,9 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
   function buildTable(rows) {
     const table = document.getElementById("sheet-table");
-    const status = document.getElementById("sheet-status");
 
     if (!rows.length) {
-      status.textContent = "No data found in the selected CSV file.";
+      table.innerHTML = "";
       return;
     }
 
@@ -474,16 +464,14 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     `;
 
     table.innerHTML = headHtml + bodyHtml;
-    status.textContent = `Showing ${normalizedRows.length} response${normalizedRows.length === 1 ? "" : "s"}.`;
   }
 
   async function loadSheet() {
-    const status = document.getElementById("sheet-status");
     const sourceUrl = localCsvPath || csvUrl;
     const sourceLabel = localCsvPath ? "local CSV file" : "Google Sheet CSV";
 
     if (!sourceUrl) {
-      status.textContent = "Set local_csv_path or google_sheet_csv_url in _config.yaml.";
+      console.error("Set local_csv_path or google_sheet_csv_url in _config.yaml.");
       return;
     }
 
@@ -505,7 +493,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
       buildTable(rows);
     } catch (err) {
-      status.textContent = `Could not load table data (${err.message}).`;
+      console.error(`Could not load table data (${err.message}).`);
     }
   }
 

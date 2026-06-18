@@ -69,14 +69,6 @@ title: Candidate Profile
     white-space: pre-wrap;
   }
 
-  .profile-status {
-    padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, #f9f1bc, var(--denver-white));
-    border-left: 4px solid #bf0a30;
-    border-radius: 6px;
-    margin-bottom: 0.8rem;
-  }
-
   @media (max-width: 768px) {
     .profile-table th,
     .profile-table td {
@@ -97,8 +89,6 @@ title: Candidate Profile
 
 <div class="profile-wrap">
   <a class="back-link" href="{{ '/' | relative_url }}">Back to candidate responses table</a>
-
-  <div id="profile-status" class="profile-status">Loading candidate profile...</div>
 
   <div id="profile-card" class="profile-card" hidden>
     <div class="profile-header">
@@ -195,7 +185,6 @@ title: Candidate Profile
   }
 
   async function loadProfile() {
-    const statusEl = document.getElementById("profile-status");
     const cardEl = document.getElementById("profile-card");
     const tableEl = document.getElementById("profile-table");
     const nameEl = document.getElementById("candidate-name");
@@ -204,7 +193,7 @@ title: Candidate Profile
     const rowId = Number(params.get("id"));
 
     if (!Number.isInteger(rowId) || rowId < 0) {
-      statusEl.textContent = "Invalid candidate link.";
+      console.error("Invalid candidate link.");
       return;
     }
 
@@ -212,7 +201,7 @@ title: Candidate Profile
     const sourceLabel = localCsvPath ? "local CSV file" : "Google Sheet CSV";
 
     if (!sourceUrl) {
-      statusEl.textContent = "Set local_csv_path or google_sheet_csv_url in _config.yaml.";
+      console.error("Set local_csv_path or google_sheet_csv_url in _config.yaml.");
       return;
     }
 
@@ -308,9 +297,8 @@ title: Candidate Profile
         .join("");
 
       cardEl.hidden = false;
-      statusEl.textContent = "Profile loaded.";
     } catch (err) {
-      statusEl.textContent = `Could not load candidate profile (${err.message}).`;
+      console.error(`Could not load candidate profile (${err.message}).`);
     }
   }
 
