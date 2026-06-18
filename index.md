@@ -220,7 +220,6 @@ Candidate names open a profile page with additional details. Scroll horizontally
 
   function isDetailField(normalizedHeader) {
     return (
-      normalizedHeader === "state/position/district" ||
       normalizedHeader === "candidate website" ||
       normalizedHeader === "party affiliation" ||
       normalizedHeader === "are you a current or former elected official?" ||
