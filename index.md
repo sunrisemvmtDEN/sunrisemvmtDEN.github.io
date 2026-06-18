@@ -45,6 +45,62 @@ title: 2026 Ballot Guide
     margin-bottom: 0.95rem;
   }
 
+  .endorsed-candidates {
+    margin: 0 0 1rem;
+  }
+
+  .endorsed-intro {
+    margin: 0 0 0.95rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+
+  .endorsed-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .endorsed-card {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    border: 1px solid #dce7d6;
+    border-radius: 8px;
+    background: #ffffff;
+  }
+
+  .endorsed-headshot {
+    width: 92px;
+    height: 92px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #d5e0ce;
+    background: #f3f7ef;
+    flex: 0 0 auto;
+  }
+
+  .endorsed-content {
+    min-width: 0;
+  }
+
+  .endorsed-name {
+    margin: 0 0 0.35rem;
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+
+  .endorsed-name a {
+    color: #0b57d0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 700;
+  }
+
+  .endorsed-name a:hover {
+    color: #083b8f;
+  }
+
   .sheet-status {
     padding: 0.65rem 0.8rem;
     background: linear-gradient(90deg, var(--accent-soft), var(--denver-white));
@@ -131,6 +187,17 @@ title: 2026 Ballot Guide
       font-size: 0.9rem;
     }
 
+    .endorsed-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .endorsed-headshot {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+    }
+
     th,
     td {
       padding: 0.8rem;
@@ -145,7 +212,24 @@ title: 2026 Ballot Guide
   }
 </style>
 
-## Live Candidate Responses
+## Endorsed Candidates
+
+<section class="endorsed-candidates">
+  <p class="endorsed-intro">Starting over a year ago, Sunrise Denver volunteers began keeping tabs on the primary races. After meeting with dozens of candidates, the Electoral subteam presented the following 3 candidates as endorsement recommendations- the Denver Hub voted unanimously to endorse each one. Our endorsement means we are pushing local Sunrisers to commit time and effort in aiding these campaigns success. This is why we limited to 3 endorsements. More candidates can be found in the next section.</p>
+  <div class="endorsed-grid">
+    {% for candidate in site.data.endorsed_candidates %}
+      <article class="endorsed-card">
+        <img class="endorsed-headshot" src="{{ candidate.headshot }}" alt="Headshot of {{ candidate.name | escape }}">
+        <div class="endorsed-content">
+          <h3 class="endorsed-name"><a href="{{ candidate.url }}" target="_blank" rel="noopener noreferrer">{{ candidate.name }}</a></h3>
+          <p>{{ candidate.description }}</p>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+## Additional Candidate Responses
 
 <p class="sheet-note">
 To assess and platform more even more candidates, Sunrise Movement volunteers in the Denver area asked candidates to answer a series of questions, which have been summarized here to give voter's a fast and simple way to be informed.
