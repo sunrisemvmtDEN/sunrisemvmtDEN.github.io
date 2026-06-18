@@ -4,6 +4,10 @@ title: Candidate Profile
 ---
 
 <style>
+  :root {
+    --denver-white: #ffffff;
+  }
+
   .profile-wrap {
     max-width: 920px;
     margin-top: 1rem;
@@ -12,14 +16,14 @@ title: Candidate Profile
   .back-link {
     display: inline-block;
     margin-bottom: 1rem;
-    color: #0b57d0;
+    color: #0096d6;
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
   .profile-card {
-    background: #ffffff;
+    background: var(--denver-white);
     border: 1px solid #c9d5c3;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(51, 52, 46, 0.08);
@@ -67,8 +71,8 @@ title: Candidate Profile
 
   .profile-status {
     padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, #f9f1bc, #ffffff);
-    border-left: 4px solid #8f0d56;
+    background: linear-gradient(90deg, #f9f1bc, var(--denver-white));
+    border-left: 4px solid #bf0a30;
     border-radius: 6px;
     margin-bottom: 0.8rem;
   }
@@ -162,11 +166,32 @@ title: Candidate Profile
       .replace(/'/g, "&#39;");
   }
 
+  function toCandidateWebsiteUrl(value) {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) {
+      return "";
+    }
+
+    // Normalize common entries that omit protocol.
+    const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+    try {
+      return new URL(withProtocol).href;
+    } catch {
+      return "";
+    }
+  }
+
   function normalizeHeader(value) {
     return String(value || "")
       .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
+  }
+
+  function isNoResponse(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+    return normalized.startsWith("no");
   }
 
   async function loadProfile() {
@@ -231,6 +256,7 @@ title: Candidate Profile
       const detailRows = [];
       let longPromptValue = "";
       let candidateName = "Candidate";
+      let electedOfficialValue = "";
 
       headers.forEach((header, idx) => {
         const normalized = normalizeHeader(header);
@@ -238,6 +264,10 @@ title: Candidate Profile
 
         if (normalized === "candidate name") {
           candidateName = value || candidateName;
+        }
+
+        if (normalized === "are you a current or former elected official?") {
+          electedOfficialValue = value;
         }
 
         if (profileFields.has(normalized)) {
@@ -250,13 +280,31 @@ title: Candidate Profile
       });
 
       if (longPromptValue) {
-        detailRows.push({ label: "Some suggested prompts", value: longPromptValue });
+        detailRows.push({ label: "Candidate Statement", value: longPromptValue });
       }
+
+      const filteredDetailRows = detailRows.filter((item) => {
+        const normalizedLabel = normalizeHeader(item.label);
+        if (normalizedLabel === "if so, what office(s) have you held?" && isNoResponse(electedOfficialValue)) {
+          return false;
+        }
+        return true;
+      });
 
       nameEl.textContent = candidateName;
 
-      tableEl.innerHTML = detailRows
-        .map((item) => `<tr><th>${escapeHtml(item.label)}</th><td>${escapeHtml(item.value)}</td></tr>`)
+      tableEl.innerHTML = filteredDetailRows
+        .map((item) => {
+          const normalizedLabel = normalizeHeader(item.label);
+          if (normalizedLabel === "candidate website") {
+            const href = toCandidateWebsiteUrl(item.value);
+            if (href) {
+              return `<tr><th>${escapeHtml(item.label)}</th><td><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.value)}</a></td></tr>`;
+            }
+          }
+
+          return `<tr><th>${escapeHtml(item.label)}</th><td>${escapeHtml(item.value)}</td></tr>`;
+        })
         .join("");
 
       cardEl.hidden = false;
