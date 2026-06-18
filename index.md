@@ -22,10 +22,7 @@ title: 2026 Ballot Guide
   }
 
   body {
-    background:
-      radial-gradient(circle at top right, rgba(255, 222, 22, 0.26) 0%, transparent 30%),
-      radial-gradient(circle at bottom left, rgba(253, 144, 20, 0.12) 0%, transparent 35%),
-      linear-gradient(180deg, #f7fbf3 0%, var(--bg) 55%, #eef5e8 100%);
+    background: var(--bg);
     color: var(--ink);
   }
 
@@ -142,6 +139,8 @@ title: 2026 Ballot Guide
 ## Live Candidate Responses
 
 <p class="sheet-note">
+To assess and platform more even more candidates, Sunrise Movement volunteers in the Denver area asked candidates to answer a series of questions, which have been summarized here to give voter's a fast and simple way to be informed.
+
 Candidate names open a profile page with additional details. Scroll horizontally to view all policy response columns.
 </p>
 
@@ -218,10 +217,18 @@ Candidate names open a profile page with additional details. Scroll horizontally
       .toLowerCase();
   }
 
+  function cleanHeader(value) {
+    return String(value || "")
+      .split(/\n/)[0]
+      .replace(/https?:\/\/\S+/g, "")
+      .trim();
+  }
+
   function isDetailField(normalizedHeader) {
     return (
       normalizedHeader === "candidate website" ||
       normalizedHeader === "party affiliation" ||
+      normalizedHeader === "type of race" ||
       normalizedHeader === "are you a current or former elected official?" ||
       normalizedHeader === "if so, what office(s) have you held?" ||
       normalizedHeader.startsWith("some suggested prompts:")
@@ -259,7 +266,7 @@ Candidate names open a profile page with additional details. Scroll horizontally
 
     const headHtml = `
       <thead>
-        <tr>${visibleColumns.map((col) => `<th>${escapeHtml(col.header || "")}</th>`).join("")}</tr>
+        <tr>${visibleColumns.map((col) => `<th>${escapeHtml(cleanHeader(col.header))}</th>`).join("")}</tr>
       </thead>
     `;
 
