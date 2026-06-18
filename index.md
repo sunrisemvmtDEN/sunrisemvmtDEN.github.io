@@ -35,70 +35,149 @@ title: 2026 Ballot Guide
 
   .sheet-note {
     color: var(--muted);
-    font-size: 0.95rem;
+    Candidate names open a profile page with additional details. Scroll horizontally to view all policy response columns.
     margin-bottom: 0.8rem;
   }
 
   .sheet-status {
-    padding: 0.65rem 0.8rem;
+        overflow-x: auto;
+        overflow-y: hidden;
     background: linear-gradient(90deg, var(--accent-soft), #ffffff);
     border-left: 4px solid var(--accent-strong);
     border-radius: 6px;
     margin-bottom: 0.8rem;
   }
-
+        width: max-content;
+        min-width: 1700px;
   .table-shell {
     border: 1px solid var(--line);
     border-radius: 10px;
     overflow: auto;
-    background: rgba(255, 252, 247, 0.9);
-    box-shadow: 0 8px 24px rgba(25, 45, 35, 0.08);
-  }
+        word-wrap: break-word;
+        word-break: normal;
+        overflow-wrap: break-word;
+        min-width: 13rem;
+        max-width: 22rem;
 
   table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 720px;
   }
 
+
+      .candidate-link {
+        color: #0b57d0;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .candidate-link:hover {
+        color: #083b8f;
+      }
   thead {
     position: sticky;
     top: 0;
     z-index: 1;
+          min-width: 11rem;
+          max-width: 18rem;
   }
 
   th,
   td {
-    padding: 0.72rem 0.7rem;
+      const candidatePageUrl = "{{ '/candidate.html' | relative_url }}";
+    padding: 1rem 1.1rem;
     border-bottom: 1px solid var(--line);
     vertical-align: top;
     text-align: left;
-    line-height: 1.35;
+    line-height: 1.65;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+
+      function normalizeHeader(value) {
+        return String(value || "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
+      }
+
+      function isDetailField(normalizedHeader) {
+        return (
+          normalizedHeader === "state/position/district" ||
+          normalizedHeader === "candidate website" ||
+          normalizedHeader === "party affiliation" ||
+          normalizedHeader === "are you a current or former elected official?" ||
+          normalizedHeader === "if so, what office(s) have you held?" ||
+          normalizedHeader.startsWith("some suggested prompts:")
+        );
+      }
+  }
+        const headers = rows[0].slice(1);
+  th {
+
+        const columns = headers.map((header, index) => ({
+          index,
+          header,
+          normalized: normalizeHeader(header),
+        }));
+
+        const visibleColumns = columns.filter((col) => !isDetailField(col.normalized));
+        const candidateNameColumn = columns.find((col) => col.normalized === "candidate name");
+    background: linear-gradient(180deg, #fff4a8 0%, #ffe86a 100%);
+    color: var(--sunrise-charcoal);
+            <tr>${visibleColumns.map((col) => `<th>${escapeHtml(col.header || "")}</th>`).join("")}</tr>
+    letter-spacing: 0.01em;
+    font-size: 0.92rem;
   }
 
-  th {
-    background: linear-gradient(180deg, var(--gold-light), #f4ca00);
-    color: var(--sunrise-charcoal);
-    font-weight: 600;
-    letter-spacing: 0.01em;
+  tbody tr {
+    transition: background-color 0.15s ease;
+              .map((row, rowIndex) => {
+                const rowCells = visibleColumns
+                  .map((col) => {
+                    const cell = row[col.index] || "";
+                    if (candidateNameColumn && col.index === candidateNameColumn.index) {
+                      const href = `${candidatePageUrl}?id=${encodeURIComponent(rowIndex)}`;
+                      return `<td><a class="candidate-link" href="${href}">${escapeHtml(cell)}</a></td>`;
+                    }
+                    return `<td>${escapeHtml(cell)}</td>`;
+                  })
+                  .join("");
+                return `<tr>${rowCells}</tr>`;
+              })
+
+  tbody td {
+    background: #ffffff;
   }
 
   tbody tr:nth-child(even) {
-    background: #f8fbf5;
+    background: #f7faf5;
   }
 
   tbody tr:hover {
-    background: #fff0b8;
+    background: #eef4e8;
   }
 
-  @media (max-width: 740px) {
+  td {
+    font-size: 0.97rem;
+    color: var(--ink);
+    white-space: normal;
+  }
+
+  @media (max-width: 768px) {
     .sheet-note {
       font-size: 0.9rem;
     }
 
     th,
     td {
-      padding: 0.6rem;
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    th {
+      font-size: 0.85rem;
     }
   }
 </style>
@@ -117,6 +196,7 @@ This table is loaded live from Google Sheets. Update the sheet and this page upd
 </div>
 
 <script>
+  const localCsvPath = "{{ site.local_csv_path | escape }}";
   const csvUrl = "{{ site.google_sheet_csv_url | escape }}";
 
   function parseCsv(text) {
@@ -164,6 +244,15 @@ This table is loaded live from Google Sheets. Update the sheet and this page upd
     return rows;
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function buildTable(rows) {
     const table = document.getElementById("sheet-table");
     const status = document.getElementById("sheet-status");
@@ -173,45 +262,64 @@ This table is loaded live from Google Sheets. Update the sheet and this page upd
       return;
     }
 
-    const headers = rows[0];
-    const bodyRows = rows.slice(1);
+    // Remove timestamp column if present in the first position.
+    const headers = rows[0].slice(1);
+    const bodyRows = rows.slice(1).map((row) => row.slice(1));
+
+    const normalizedRows = bodyRows.map((row) => {
+      const paddedRow = row.slice(0, headers.length);
+      while (paddedRow.length < headers.length) {
+        paddedRow.push("");
+      }
+      return paddedRow;
+    });
 
     const headHtml = `
       <thead>
-        <tr>${headers.map((h) => `<th>${h || ""}</th>`).join("")}</tr>
+        <tr>${headers.map((h) => `<th>${escapeHtml(h || "")}</th>`).join("")}</tr>
       </thead>
     `;
 
     const bodyHtml = `
       <tbody>
-        ${bodyRows
-          .map((r) => `<tr>${headers.map((_, i) => `<td>${r[i] || ""}</td>`).join("")}</tr>`)
+        ${normalizedRows
+          .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`)
           .join("")}
       </tbody>
     `;
 
     table.innerHTML = headHtml + bodyHtml;
-    status.textContent = `Showing ${bodyRows.length} row${bodyRows.length === 1 ? "" : "s"}.`;
+    status.textContent = `Showing ${normalizedRows.length} response${normalizedRows.length === 1 ? "" : "s"}.`;
   }
 
   async function loadSheet() {
     const status = document.getElementById("sheet-status");
+    const sourceUrl = localCsvPath || csvUrl;
+    const sourceLabel = localCsvPath ? "local CSV file" : "Google Sheet CSV";
 
-    if (!csvUrl) {
-      status.textContent = "Set google_sheet_csv_url in _config.yaml to your published Google Sheet CSV link.";
+    if (!sourceUrl) {
+      status.textContent = "Set local_csv_path or google_sheet_csv_url in _config.yaml.";
       return;
     }
 
     try {
-      const res = await fetch(csvUrl, { cache: "no-store" });
+      const res = await fetch(sourceUrl, { cache: "no-store" });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
       const csvText = await res.text();
+
+      if (/<!doctype html|<html|\.gb_[A-Za-z0-9_-]+\{|<head|<body/i.test(csvText)) {
+        throw new Error(`${sourceLabel} returned HTML instead of CSV`);
+      }
+
       const rows = parseCsv(csvText);
+      if (!rows.length) {
+        throw new Error(`${sourceLabel} did not contain any CSV rows`);
+      }
       buildTable(rows);
     } catch (err) {
-      status.textContent = `Could not load Google Sheet data (${err.message}). Confirm the tab is published and the URL is a CSV publish link.`;
+      status.textContent = `Could not load table data (${err.message}).`;
     }
   }
 
