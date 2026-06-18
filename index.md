@@ -74,7 +74,7 @@ title: 2026 Ballot Guide
     padding: 0.75rem;
     border: 1px solid #dce7d6;
     border-radius: 8px;
-    background: #ffffff;
+    background: var(--denver-white);
   }
 
   .endorsed-headshot {
