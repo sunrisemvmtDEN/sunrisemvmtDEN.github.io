@@ -1,0 +1,110 @@
+/* Sunrise Movement color palette */
+:root {
+  --sunrise-gold: #ffde16;
+  --sunrise-charcoal: #33342e;
+  --sunrise-sage: #e3eddf;
+  --sunrise-orange: #fd9014;
+  --sunrise-maroon: #8f0d56;
+
+  --bg: var(--sunrise-sage);
+  --ink: var(--sunrise-charcoal);
+  --muted: #5d6258;
+  --line: #c9d5c3;
+  --accent: var(--sunrise-orange);
+  --accent-soft: #f9f1bc;
+  --accent-strong: var(--sunrise-maroon);
+  --gold-light: var(--sunrise-gold);
+}
+
+body {
+  background:
+    radial-gradient(circle at top right, rgba(255, 222, 22, 0.26) 0%, transparent 30%),
+    radial-gradient(circle at bottom left, rgba(253, 144, 20, 0.12) 0%, transparent 35%),
+    linear-gradient(180deg, #f7fbf3 0%, var(--bg) 55%, #eef5e8 100%);
+}
+
+/* Full-width stacked layout */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-header {
+  width: 100%;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 222, 22, 0.1) 0%,
+    rgba(253, 144, 20, 0.06) 50%,
+    transparent 100%
+  );
+  border-bottom: 1px solid var(--line);
+}
+
+.site-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.site-description {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.site-content {
+  flex: 1;
+  width: 100%;
+  padding: 2rem 1.5rem;
+  max-width: 100%;
+}
+
+.site-footer {
+  width: 100%;
+  padding: 1.5rem;
+  text-align: center;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .site-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .site-title {
+    font-size: 1.8rem;
+  }
+
+  .site-description {
+    font-size: 1rem;
+  }
+
+  .site-content {
+    padding: 1.5rem 1rem;
+  }
+}
