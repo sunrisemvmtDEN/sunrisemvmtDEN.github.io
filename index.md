@@ -226,10 +226,18 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
       .toLowerCase();
   }
 
+  function cleanHeader(value) {
+    return String(value || "")
+      .split(/\n/)[0]
+      .replace(/https?:\/\/\S+/g, "")
+      .trim();
+  }
+
   function isDetailField(normalizedHeader) {
     return (
       normalizedHeader === "candidate website" ||
       normalizedHeader === "party affiliation" ||
+      normalizedHeader === "type of race" ||
       normalizedHeader === "are you a current or former elected official?" ||
       normalizedHeader === "if so, what office(s) have you held?" ||
       normalizedHeader.startsWith("some suggested prompts:")
@@ -267,7 +275,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
     const headHtml = `
       <thead>
-        <tr>${visibleColumns.map((col) => `<th>${escapeHtml(col.header || "")}</th>`).join("")}</tr>
+        <tr>${visibleColumns.map((col) => `<th>${escapeHtml(cleanHeader(col.header))}</th>`).join("")}</tr>
       </thead>
     `;
 
