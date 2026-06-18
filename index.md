@@ -229,11 +229,24 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   function isDetailField(normalizedHeader) {
     return (
       normalizedHeader === "candidate website" ||
+      normalizedHeader === "type of race" ||
       normalizedHeader === "party affiliation" ||
       normalizedHeader === "are you a current or former elected official?" ||
       normalizedHeader === "if so, what office(s) have you held?" ||
       normalizedHeader.startsWith("some suggested prompts:")
     );
+  }
+
+  function getHeaderHtml(column) {
+    if (column.normalized.startsWith("will you run boldly on a green new deal?")) {
+      return `Will you run boldly on a <a href="https://www.sunrisemovement.org/green-new-deal/" target="_blank" rel="noopener noreferrer">Green New Deal</a>?`;
+    }
+
+    if (column.normalized.startsWith("have you taken sunrise movement's green new deal pledge")) {
+      return `Have you taken <a href="https://www.sunrisemovement.org/pledge" target="_blank" rel="noopener noreferrer">Sunrise Movement's Green New Deal Pledge</a> (https://www.sunrisemovement.org/pledge)`;
+    }
+
+    return escapeHtml(column.header || "");
   }
 
   function buildTable(rows) {
@@ -267,7 +280,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
     const headHtml = `
       <thead>
-        <tr>${visibleColumns.map((col) => `<th>${escapeHtml(col.header || "")}</th>`).join("")}</tr>
+        <tr>${visibleColumns.map((col) => `<th>${getHeaderHtml(col)}</th>`).join("")}</tr>
       </thead>
     `;
 
