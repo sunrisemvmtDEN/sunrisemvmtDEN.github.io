@@ -30,6 +30,13 @@ title: 2026 Ballot Guide
     color: var(--ink);
   }
 
+  .site-content a,
+  .site-content a:visited,
+  .site-content a:hover,
+  .site-content a:focus {
+    color: var(--denver-sky-blue);
+  }
+
   .sheet-wrap {
     margin-top: 1rem;
   }
@@ -45,12 +52,55 @@ title: 2026 Ballot Guide
     margin-bottom: 0.95rem;
   }
 
-  .sheet-status {
-    padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, var(--accent-soft), var(--denver-white));
-    border-left: 4px solid var(--accent-strong);
-    border-radius: 6px;
-    margin-bottom: 0.8rem;
+  .endorsed-candidates {
+    margin: 0 0 1rem;
+  }
+
+  .endorsed-intro {
+    margin: 0 0 0.95rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+
+  .endorsed-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .endorsed-card {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    border: 1px solid #dce7d6;
+    border-radius: 8px;
+    background: var(--denver-white);
+  }
+
+  .endorsed-headshot {
+    width: 92px;
+    height: 92px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #d5e0ce;
+    background: #f3f7ef;
+    flex: 0 0 auto;
+  }
+
+  .endorsed-content {
+    min-width: 0;
+  }
+
+  .endorsed-name {
+    margin: 0 0 0.35rem;
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+
+  .endorsed-name a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 700;
   }
 
   .table-shell {
@@ -123,12 +173,23 @@ title: 2026 Ballot Guide
   }
 
   .candidate-link:hover {
-    color: var(--denver-red);
+    color: var(--denver-sky-blue);
   }
 
   @media (max-width: 768px) {
     .sheet-note {
       font-size: 0.9rem;
+    }
+
+    .endorsed-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .endorsed-headshot {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
     }
 
     th,
@@ -145,7 +206,20 @@ title: 2026 Ballot Guide
   }
 </style>
 
-## Live Candidate Responses
+## Endorsed Candidates
+
+<section class="endorsed-candidates">
+  <p class="endorsed-intro">Starting over a year ago, Sunrise Denver volunteers began keeping tabs on the primary races. After meeting with dozens of candidates, the Electoral subteam presented the following 3 candidates as endorsement recommendations- the Denver Hub Members voted unanimously to endorse each one! 
+  </p>
+
+<p class="sheet-note sheet-note-emphasis"><em> Candidate names link to their pages. Our endorsement means we are pushing local Sunrisers to commit time and effort in aiding these campaigns success. This is why we limited to 3 endorsements. More awesome candidates can be found in the next section.</em></p>
+
+  <div class="endorsed-grid" id="endorsed-grid">
+    <p class="sheet-note">Loading endorsed candidates...</p>
+  </div>
+</section>
+
+## Additional Candidate Responses
 
 <p class="sheet-note">
 To assess and platform more even more candidates, Sunrise Movement volunteers in the Denver area asked candidates to answer a series of questions, which have been summarized here to give voter's a fast and simple way to be informed.
@@ -154,7 +228,6 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 <p class="sheet-note sheet-note-emphasis"><em>Candidate names open a profile page with additional details. Scroll horizontally to view all policy response columns.</em></p>
 
 <div class="sheet-wrap">
-  <div id="sheet-status" class="sheet-status">Loading latest data...</div>
   <div class="table-shell">
     <table id="sheet-table" aria-label="Candidate responses table"></table>
   </div>
@@ -164,6 +237,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   const localCsvPath = "{{ site.local_csv_path | escape }}";
   const csvUrl = "{{ site.google_sheet_csv_url | escape }}";
   const candidatePageUrl = "{{ '/candidate.html' | relative_url }}";
+  const endorsedCsvPath = "{{ '/data/endorsed_candidates.csv' | relative_url }}";
 
   function parseCsv(text) {
     const rows = [];
@@ -249,12 +323,97 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     return escapeHtml(column.header || "");
   }
 
+  function toUrl(value) {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) {
+      return "";
+    }
+
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+
+    if (trimmed.startsWith("/")) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  }
+
+  function buildEndorsedCandidates(rows) {
+    const grid = document.getElementById("endorsed-grid");
+    if (!grid) {
+      return;
+    }
+
+    if (!rows.length || rows.length < 2) {
+      grid.innerHTML = "<p class=\"sheet-note\">No endorsed candidates found.</p>";
+      return;
+    }
+
+    const headers = rows[0].map((h) => normalizeHeader(h));
+    const getValue = (row, key) => {
+      const idx = headers.indexOf(key);
+      return idx >= 0 ? (row[idx] || "") : "";
+    };
+
+    const cards = rows
+      .slice(1)
+      .filter((row) => row.some((cell) => String(cell || "").trim() !== ""))
+      .map((row) => {
+        const name = getValue(row, "name");
+        const url = toUrl(getValue(row, "url"));
+        const headshot = toUrl(getValue(row, "headshot"));
+        const description = getValue(row, "description");
+
+        const nameHtml = url
+          ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>`
+          : escapeHtml(name);
+
+        const imageHtml = headshot
+          ? `<img class="endorsed-headshot" src="${escapeHtml(headshot)}" alt="Headshot of ${escapeHtml(name)}">`
+          : "";
+
+        return `
+          <article class="endorsed-card">
+            ${imageHtml}
+            <div class="endorsed-content">
+              <h3 class="endorsed-name">${nameHtml}</h3>
+              <p>${escapeHtml(description)}</p>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+
+    grid.innerHTML = cards || "<p class=\"sheet-note\">No endorsed candidates found.</p>";
+  }
+
+  async function loadEndorsedCandidates() {
+    const grid = document.getElementById("endorsed-grid");
+    if (!grid) {
+      return;
+    }
+
+    try {
+      const res = await fetch(endorsedCsvPath, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const csvText = await res.text();
+      const rows = parseCsv(csvText);
+      buildEndorsedCandidates(rows);
+    } catch (err) {
+      grid.innerHTML = `<p class=\"sheet-note\">Could not load endorsed candidates (${escapeHtml(err.message)}).</p>`;
+    }
+  }
+
   function buildTable(rows) {
     const table = document.getElementById("sheet-table");
-    const status = document.getElementById("sheet-status");
 
     if (!rows.length) {
-      status.textContent = "No data found in the selected CSV file.";
+      table.innerHTML = "";
       return;
     }
 
@@ -305,16 +464,14 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     `;
 
     table.innerHTML = headHtml + bodyHtml;
-    status.textContent = `Showing ${normalizedRows.length} response${normalizedRows.length === 1 ? "" : "s"}.`;
   }
 
   async function loadSheet() {
-    const status = document.getElementById("sheet-status");
     const sourceUrl = localCsvPath || csvUrl;
     const sourceLabel = localCsvPath ? "local CSV file" : "Google Sheet CSV";
 
     if (!sourceUrl) {
-      status.textContent = "Set local_csv_path or google_sheet_csv_url in _config.yaml.";
+      console.error("Set local_csv_path or google_sheet_csv_url in _config.yaml.");
       return;
     }
 
@@ -336,9 +493,10 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
       buildTable(rows);
     } catch (err) {
-      status.textContent = `Could not load table data (${err.message}).`;
+      console.error(`Could not load table data (${err.message}).`);
     }
   }
 
+  loadEndorsedCandidates();
   loadSheet();
 </script>

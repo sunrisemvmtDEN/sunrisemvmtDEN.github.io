@@ -4,10 +4,6 @@ title: Candidate Profile
 ---
 
 <style>
-  :root {
-    --denver-white: #ffffff;
-  }
-
   .profile-wrap {
     max-width: 920px;
     margin-top: 1rem;
@@ -16,7 +12,7 @@ title: Candidate Profile
   .back-link {
     display: inline-block;
     margin-bottom: 1rem;
-    color: #0096d6;
+    color: var(--denver-sky-blue);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -24,7 +20,7 @@ title: Candidate Profile
 
   .profile-card {
     background: var(--denver-white);
-    border: 1px solid #c9d5c3;
+    border: 1px solid var(--line);
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(51, 52, 46, 0.08);
     overflow: hidden;
@@ -33,13 +29,13 @@ title: Candidate Profile
   .profile-header {
     padding: 1rem 1.2rem;
     background: linear-gradient(180deg, #fff4a8 0%, #ffe86a 100%);
-    border-bottom: 1px solid #c9d5c3;
+    border-bottom: 1px solid var(--line);
   }
 
   .profile-header h2 {
     margin: 0;
     font-size: 1.4rem;
-    color: #33342e;
+    color: var(--sunrise-charcoal);
   }
 
   .profile-table {
@@ -60,21 +56,13 @@ title: Candidate Profile
     width: 35%;
     min-width: 210px;
     background: #f8fbf5;
-    color: #33342e;
+    color: var(--sunrise-charcoal);
     font-weight: 600;
   }
 
   .profile-table td {
-    color: #33342e;
+    color: var(--sunrise-charcoal);
     white-space: pre-wrap;
-  }
-
-  .profile-status {
-    padding: 0.65rem 0.8rem;
-    background: linear-gradient(90deg, #f9f1bc, var(--denver-white));
-    border-left: 4px solid #bf0a30;
-    border-radius: 6px;
-    margin-bottom: 0.8rem;
   }
 
   @media (max-width: 768px) {
@@ -97,8 +85,6 @@ title: Candidate Profile
 
 <div class="profile-wrap">
   <a class="back-link" href="{{ '/' | relative_url }}">Back to candidate responses table</a>
-
-  <div id="profile-status" class="profile-status">Loading candidate profile...</div>
 
   <div id="profile-card" class="profile-card" hidden>
     <div class="profile-header">
@@ -195,7 +181,6 @@ title: Candidate Profile
   }
 
   async function loadProfile() {
-    const statusEl = document.getElementById("profile-status");
     const cardEl = document.getElementById("profile-card");
     const tableEl = document.getElementById("profile-table");
     const nameEl = document.getElementById("candidate-name");
@@ -204,7 +189,7 @@ title: Candidate Profile
     const rowId = Number(params.get("id"));
 
     if (!Number.isInteger(rowId) || rowId < 0) {
-      statusEl.textContent = "Invalid candidate link.";
+      console.error("Invalid candidate link.");
       return;
     }
 
@@ -212,7 +197,7 @@ title: Candidate Profile
     const sourceLabel = localCsvPath ? "local CSV file" : "Google Sheet CSV";
 
     if (!sourceUrl) {
-      statusEl.textContent = "Set local_csv_path or google_sheet_csv_url in _config.yaml.";
+      console.error("Set local_csv_path or google_sheet_csv_url in _config.yaml.");
       return;
     }
 
@@ -308,9 +293,8 @@ title: Candidate Profile
         .join("");
 
       cardEl.hidden = false;
-      statusEl.textContent = "Profile loaded.";
     } catch (err) {
-      statusEl.textContent = `Could not load candidate profile (${err.message}).`;
+      console.error(`Could not load candidate profile (${err.message}).`);
     }
   }
 
