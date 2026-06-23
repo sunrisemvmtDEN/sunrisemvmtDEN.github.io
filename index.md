@@ -18,7 +18,8 @@ title: 2026 Ballot Guide
     --bg: var(--denver-white);
     --ink: var(--sunrise-charcoal);
     --muted: #5d6258;
-    --line: #c9d5c3;
+    --line: var(--sunrise-maroon);
+    /* --line: #c9d5c3; */    
     --accent: var(--sunrise-orange);
     --accent-soft: #f9f1bc;
     --accent-strong: var(--denver-red);
@@ -35,6 +36,22 @@ title: 2026 Ballot Guide
   .site-content a:hover,
   .site-content a:focus {
     color: var(--denver-sky-blue);
+  }
+
+  .site-title {
+    display: inline-block;
+    background: var(--sunrise-gold);
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+  }
+
+  .site-content h2 {
+    display: block;
+    background: var(--sunrise-gold);
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    margin-top: 2rem;
+    border-top: 1px solid var(--line);
   }
 
   .sheet-wrap {
@@ -213,6 +230,14 @@ title: 2026 Ballot Guide
   }
 
   @media (max-width: 768px) {
+    .site-title {
+      padding: 0.3rem 0.55rem;
+    }
+
+    .site-content h2 {
+      padding: 0.3rem 0.55rem;
+    }
+
     .sheet-note {
       font-size: 0.9rem;
     }
@@ -269,10 +294,9 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   </div>
 </div>
 
-## Helpful Information
+## FAQ
 
 <section class="helpful-info" aria-label="Helpful information and frequently asked questions">
-  <h3>FAQ</h3>
   <div class="faq-list" id="faq-list">
     <p class="sheet-note">Loading FAQ...</p>
   </div>
