@@ -297,6 +297,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 ## FAQ
 
 <section class="helpful-info" aria-label="Helpful information and frequently asked questions">
+
   <div class="faq-list" id="faq-list">
     <p class="sheet-note">Loading FAQ...</p>
   </div>
