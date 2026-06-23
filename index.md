@@ -342,20 +342,40 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   function linkifyText(value) {
     const raw = String(value || "");
     const urlRegex = /https?:\/\/[^\s<>'"]+/g;
-    let html = "";
-    let lastIndex = 0;
-    let match;
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 
-    while ((match = urlRegex.exec(raw)) !== null) {
-      const url = match[0];
-      const start = match.index;
+    function escapeAndLinkifyPlain(text) {
+      let html = "";
+      let lastIndex = 0;
+      let match;
 
-      html += escapeHtml(raw.slice(lastIndex, start));
-      html += `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
-      lastIndex = start + url.length;
+      while ((match = urlRegex.exec(text)) !== null) {
+        const url = match[0];
+        const start = match.index;
+        html += escapeHtml(text.slice(lastIndex, start));
+        html += `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
+        lastIndex = start + url.length;
+      }
+
+      html += escapeHtml(text.slice(lastIndex));
+      return html;
     }
 
-    html += escapeHtml(raw.slice(lastIndex));
+    let html = "";
+    let lastIndex = 0;
+    let mdMatch;
+
+    while ((mdMatch = markdownLinkRegex.exec(raw)) !== null) {
+      const start = mdMatch.index;
+      const linkText = mdMatch[1];
+      const linkUrl = mdMatch[2];
+
+      html += escapeAndLinkifyPlain(raw.slice(lastIndex, start));
+      html += `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)}</a>`;
+      lastIndex = start + mdMatch[0].length;
+    }
+
+    html += escapeAndLinkifyPlain(raw.slice(lastIndex));
     return html;
   }
 
@@ -445,7 +465,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
             ${imageHtml}
             <div class="endorsed-content">
               <h3 class="endorsed-name">${nameHtml}</h3>
-              <p>${escapeHtml(description)}</p>
+              <p>${linkifyText(description)}</p>
             </div>
           </article>
         `;
