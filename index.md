@@ -72,7 +72,7 @@ title: 2026 Ballot Guide
     gap: 0.9rem;
     align-items: flex-start;
     padding: 0.75rem;
-    border: 1px solid #dce7d6;
+    border: 1px solid var(--line);
     border-radius: 8px;
     background: var(--denver-white);
   }
@@ -82,8 +82,8 @@ title: 2026 Ballot Guide
     height: 92px;
     border-radius: 8px;
     object-fit: cover;
-    border: 1px solid #d5e0ce;
-    background: #f3f7ef;
+    border: 1px solid var(--line);
+    background: solid var(--denver-white);
     flex: 0 0 auto;
   }
 
@@ -140,7 +140,7 @@ title: 2026 Ballot Guide
   }
 
   th {
-    background: linear-gradient(180deg, #fff4a8 0%, #ffe86a 100%);
+    background: var(--accent-soft);
     color: var(--sunrise-charcoal);
     font-weight: 600;
     letter-spacing: 0.01em;
@@ -174,6 +174,42 @@ title: 2026 Ballot Guide
 
   .candidate-link:hover {
     color: var(--denver-sky-blue);
+  }
+
+  .helpful-info {
+    margin-top: 2rem;
+  }
+
+  .faq-list {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+  }
+
+  .faq-item {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--denver-white);
+    overflow: hidden;
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    padding: 0.9rem 1rem;
+    font-weight: 600;
+    color: var(--sunrise-charcoal);
+    background: var(--accent-soft);
+  }
+
+  .faq-item summary:hover {
+    background: var(--sunrise-gold);
+  }
+
+  .faq-answer {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
   }
 
   @media (max-width: 768px) {
@@ -233,11 +269,21 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   </div>
 </div>
 
+## Helpful Information
+
+<section class="helpful-info" aria-label="Helpful information and frequently asked questions">
+  <h3>FAQ</h3>
+  <div class="faq-list" id="faq-list">
+    <p class="sheet-note">Loading FAQ...</p>
+  </div>
+</section>
+
 <script>
   const localCsvPath = "{{ site.local_csv_path | escape }}";
   const csvUrl = "{{ site.google_sheet_csv_url | escape }}";
   const candidatePageUrl = "{{ '/candidate.html' | relative_url }}";
   const endorsedCsvPath = "{{ '/data/endorsed_candidates.csv' | relative_url }}";
+  const faqCsvPath = "{{ '/data/faq.csv' | relative_url }}";
 
   function parseCsv(text) {
     const rows = [];
@@ -291,6 +337,26 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  function linkifyText(value) {
+    const raw = String(value || "");
+    const urlRegex = /https?:\/\/[^\s<>'"]+/g;
+    let html = "";
+    let lastIndex = 0;
+    let match;
+
+    while ((match = urlRegex.exec(raw)) !== null) {
+      const url = match[0];
+      const start = match.index;
+
+      html += escapeHtml(raw.slice(lastIndex, start));
+      html += `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
+      lastIndex = start + url.length;
+    }
+
+    html += escapeHtml(raw.slice(lastIndex));
+    return html;
   }
 
   function normalizeHeader(value) {
@@ -409,6 +475,65 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     }
   }
 
+  function buildFaq(rows) {
+    const faqList = document.getElementById("faq-list");
+    if (!faqList) {
+      return;
+    }
+
+    if (!rows.length || rows.length < 2) {
+      faqList.innerHTML = "<p class=\"sheet-note\">No FAQ items found.</p>";
+      return;
+    }
+
+    const headers = rows[0].map((h) => normalizeHeader(h));
+    const questionIndex = headers.indexOf("question");
+    const answerIndex = headers.indexOf("answer");
+
+    if (questionIndex < 0 || answerIndex < 0) {
+      faqList.innerHTML = "<p class=\"sheet-note\">FAQ CSV must include question and answer columns.</p>";
+      return;
+    }
+
+    const items = rows
+      .slice(1)
+      .filter((row) => String(row[questionIndex] || "").trim() !== "")
+      .map((row) => {
+        const question = escapeHtml(row[questionIndex] || "");
+        const answer = linkifyText(row[answerIndex] || "");
+
+        return `
+          <details class="faq-item">
+            <summary>${question}</summary>
+            <p class="faq-answer">${answer}</p>
+          </details>
+        `;
+      })
+      .join("");
+
+    faqList.innerHTML = items || "<p class=\"sheet-note\">No FAQ items found.</p>";
+  }
+
+  async function loadFaq() {
+    const faqList = document.getElementById("faq-list");
+    if (!faqList) {
+      return;
+    }
+
+    try {
+      const res = await fetch(faqCsvPath, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const csvText = await res.text();
+      const rows = parseCsv(csvText);
+      buildFaq(rows);
+    } catch (err) {
+      faqList.innerHTML = `<p class="sheet-note">Could not load FAQ (${escapeHtml(err.message)}).</p>`;
+    }
+  }
+
   function buildTable(rows) {
     const table = document.getElementById("sheet-table");
 
@@ -498,5 +623,6 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   }
 
   loadEndorsedCandidates();
+  loadFaq();
   loadSheet();
 </script>

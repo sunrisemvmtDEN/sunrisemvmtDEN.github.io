@@ -9,10 +9,12 @@
 </head>
 <body>
     <div class="container">
+        {% unless page.hide_site_header %}
         <header class="site-header">
             <h1 class="site-title">{{ site.title }}</h1>
             <p class="site-description">{{ site.description }}</p>
         </header>
+        {% endunless %}
 
         <main class="site-content">
             {{ content }}
