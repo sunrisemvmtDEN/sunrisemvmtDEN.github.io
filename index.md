@@ -395,7 +395,11 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   function linkifyText(value) {
     const raw = String(value || "");
     const urlRegex = /https?:\/\/[^\s<>'"]+/g;
-    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    const markdownLinkRegex = /\[([^\]]+)\]\(([^\s)]+)\)/g;
+
+    function formatInlineMarkdown(text) {
+      return text.replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+    }
 
     function escapeAndLinkifyPlain(text) {
       let html = "";
@@ -405,12 +409,12 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
       while ((match = urlRegex.exec(text)) !== null) {
         const url = match[0];
         const start = match.index;
-        html += escapeHtml(text.slice(lastIndex, start));
+        html += formatInlineMarkdown(escapeHtml(text.slice(lastIndex, start)));
         html += `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
         lastIndex = start + url.length;
       }
 
-      html += escapeHtml(text.slice(lastIndex));
+      html += formatInlineMarkdown(escapeHtml(text.slice(lastIndex)));
       return html;
     }
 
@@ -421,10 +425,14 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
     while ((mdMatch = markdownLinkRegex.exec(raw)) !== null) {
       const start = mdMatch.index;
       const linkText = mdMatch[1];
-      const linkUrl = mdMatch[2];
+      const linkUrl = toUrl(mdMatch[2]);
 
       html += escapeAndLinkifyPlain(raw.slice(lastIndex, start));
-      html += `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)}</a>`;
+      if (linkUrl) {
+        html += `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)}</a>`;
+      } else {
+        html += formatInlineMarkdown(escapeHtml(mdMatch[0]));
+      }
       lastIndex = start + mdMatch[0].length;
     }
 
