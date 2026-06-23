@@ -51,7 +51,7 @@ title: 2026 Ballot Guide
     padding: 0.35rem 0.7rem;
     border-radius: 4px;
     margin-top: 2rem;
-    border-top: 1px solid var(--line);
+    border: 1px solid var(--line);
   }
 
   .sheet-wrap {
@@ -85,39 +85,55 @@ title: 2026 Ballot Guide
   }
 
   .endorsed-card {
-    display: flex;
+    display: grid;
+    grid-template-columns: 200px 1fr;
     gap: 0.9rem;
-    align-items: flex-start;
     padding: 0.75rem;
     border: 1px solid var(--line);
     border-radius: 8px;
     background: var(--denver-white);
-  }
-
-  .endorsed-headshot {
-    width: 92px;
-    height: 92px;
-    border-radius: 8px;
-    object-fit: cover;
-    border: 1px solid var(--line);
-    background: solid var(--denver-white);
-    flex: 0 0 auto;
-  }
-
-  .endorsed-content {
-    min-width: 0;
+    align-items: start;
   }
 
   .endorsed-name {
     margin: 0 0 0.35rem;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     line-height: 1.2;
+    font-weight: 700;
+    grid-column: 1 / 3;
+    grid-row: 1;
+    display: block;
+    color: var(--sunrise-charcoal);
   }
 
   .endorsed-name a {
     text-decoration: underline;
     text-underline-offset: 2px;
     font-weight: 700;
+  }
+
+  .endorsed-headshot {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    background: solid var(--denver-white);
+    grid-column: 1;
+    grid-row: 2 / 4;
+    margin: 0;
+  }
+
+  .endorsed-description {
+    margin: 0;
+    grid-column: 2;
+    grid-row: 2 / 4;
+    align-self: start;
+  }
+
+  .endorsed-details {
+    display: contents;
   }
 
   .table-shell {
@@ -243,14 +259,26 @@ title: 2026 Ballot Guide
     }
 
     .endorsed-card {
-      flex-direction: column;
-      align-items: stretch;
+      grid-template-columns: 1fr;
+      grid-auto-rows: auto;
+    }
+
+    .endorsed-name {
+      grid-column: 1;
+      grid-row: 1;
     }
 
     .endorsed-headshot {
+      grid-column: 1;
+      grid-row: 2;
       width: 100%;
       height: auto;
       max-height: 220px;
+    }
+
+    .endorsed-description {
+      grid-column: 1;
+      grid-row: 3;
     }
 
     th,
@@ -487,11 +515,9 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
         return `
           <article class="endorsed-card">
+            <h3 class="endorsed-name">${nameHtml}</h3>
             ${imageHtml}
-            <div class="endorsed-content">
-              <h3 class="endorsed-name">${nameHtml}</h3>
-              <p>${linkifyText(description)}</p>
-            </div>
+            <p class="endorsed-description">${linkifyText(description)}</p>
           </article>
         `;
       })
