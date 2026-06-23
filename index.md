@@ -460,7 +460,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
 
   function getHeaderHtml(column) {
     if (column.normalized.startsWith("will you run boldly on a green new deal?")) {
-      return `Will you run boldly on a <a href="https://www.sunrisemovement.org/green-new-deal/" target="_blank" rel="noopener noreferrer">Green New Deal</a>?`;
+      return `Will you run boldly on a <a href="https://www.sunrisemovement.org/green-new-deal/" target="_blank" rel="noopener noreferrer">Green New Deal</a>? (https://www.sunrisemovement.org/green-new-deal/)`;
     }
 
     if (column.normalized.startsWith("have you taken sunrise movement's green new deal pledge")) {
