@@ -13,7 +13,8 @@
   --bg: var(--denver-white);
   --ink: var(--sunrise-charcoal);
   --muted: #5d6258;
-  --line: #c9d5c3;
+  /* --line: #c9d5c3; */
+  --line: var(--sunrise-maroon);
   --accent: var(--sunrise-orange);
   --accent-soft: #f9f1bc;
   --accent-strong: var(--denver-red);
@@ -51,13 +52,8 @@ body {
 .site-header {
   width: 100%;
   padding: 2rem 1.5rem;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 222, 22, 0.1) 0%,
-    rgba(253, 144, 20, 0.06) 50%,
-    transparent 100%
-  );
-  border-bottom: 1px solid var(--line);
+  background: var(--denver-white);
+  border-bottom: 1px solid var(--sunrise-maroon);
 }
 
 .site-title {

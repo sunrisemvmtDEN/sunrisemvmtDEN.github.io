@@ -18,7 +18,8 @@ title: 2026 Ballot Guide
     --bg: var(--denver-white);
     --ink: var(--sunrise-charcoal);
     --muted: #5d6258;
-    --line: #c9d5c3;
+    --line: var(--sunrise-maroon);
+    /* --line: #c9d5c3; */    
     --accent: var(--sunrise-orange);
     --accent-soft: #f9f1bc;
     --accent-strong: var(--denver-red);
@@ -35,6 +36,22 @@ title: 2026 Ballot Guide
   .site-content a:hover,
   .site-content a:focus {
     color: var(--denver-sky-blue);
+  }
+
+  .site-title {
+    display: inline-block;
+    background: var(--sunrise-gold);
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+  }
+
+  .site-content h2 {
+    display: block;
+    background: var(--sunrise-gold);
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    margin-top: 2rem;
+    border-top: 1px solid var(--line);
   }
 
   .sheet-wrap {
@@ -213,6 +230,14 @@ title: 2026 Ballot Guide
   }
 
   @media (max-width: 768px) {
+    .site-title {
+      padding: 0.3rem 0.55rem;
+    }
+
+    .site-content h2 {
+      padding: 0.3rem 0.55rem;
+    }
+
     .sheet-note {
       font-size: 0.9rem;
     }
@@ -269,10 +294,10 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   </div>
 </div>
 
-## Helpful Information
+## FAQ
 
 <section class="helpful-info" aria-label="Helpful information and frequently asked questions">
-  <h3>FAQ</h3>
+
   <div class="faq-list" id="faq-list">
     <p class="sheet-note">Loading FAQ...</p>
   </div>
@@ -342,20 +367,40 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
   function linkifyText(value) {
     const raw = String(value || "");
     const urlRegex = /https?:\/\/[^\s<>'"]+/g;
-    let html = "";
-    let lastIndex = 0;
-    let match;
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 
-    while ((match = urlRegex.exec(raw)) !== null) {
-      const url = match[0];
-      const start = match.index;
+    function escapeAndLinkifyPlain(text) {
+      let html = "";
+      let lastIndex = 0;
+      let match;
 
-      html += escapeHtml(raw.slice(lastIndex, start));
-      html += `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
-      lastIndex = start + url.length;
+      while ((match = urlRegex.exec(text)) !== null) {
+        const url = match[0];
+        const start = match.index;
+        html += escapeHtml(text.slice(lastIndex, start));
+        html += `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
+        lastIndex = start + url.length;
+      }
+
+      html += escapeHtml(text.slice(lastIndex));
+      return html;
     }
 
-    html += escapeHtml(raw.slice(lastIndex));
+    let html = "";
+    let lastIndex = 0;
+    let mdMatch;
+
+    while ((mdMatch = markdownLinkRegex.exec(raw)) !== null) {
+      const start = mdMatch.index;
+      const linkText = mdMatch[1];
+      const linkUrl = mdMatch[2];
+
+      html += escapeAndLinkifyPlain(raw.slice(lastIndex, start));
+      html += `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)}</a>`;
+      lastIndex = start + mdMatch[0].length;
+    }
+
+    html += escapeAndLinkifyPlain(raw.slice(lastIndex));
     return html;
   }
 
@@ -445,7 +490,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
             ${imageHtml}
             <div class="endorsed-content">
               <h3 class="endorsed-name">${nameHtml}</h3>
-              <p>${escapeHtml(description)}</p>
+              <p>${linkifyText(description)}</p>
             </div>
           </article>
         `;
