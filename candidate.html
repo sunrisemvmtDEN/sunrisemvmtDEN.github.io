@@ -53,6 +53,13 @@ hide_site_header: true
     border-collapse: collapse;
   }
 
+  .profile-table-shell {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .profile-table th,
   .profile-table td {
     padding: 0.9rem 1.1rem;
@@ -75,33 +82,6 @@ hide_site_header: true
     white-space: pre-wrap;
   }
 
-  .profile-table a {
-    color: var(--denver-sky-blue);
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  .profile-table a:hover {
-    color: var(--denver-sky-blue);
-  }
-
-  @media (max-width: 768px) {
-    .profile-table th,
-    .profile-table td {
-      display: block;
-      width: 100%;
-    }
-
-    .profile-table th {
-      border-bottom: none;
-      padding-bottom: 0.3rem;
-    }
-
-    .profile-table td {
-      padding-top: 0.2rem;
-    }
-  }
 </style>
 
 <div class="profile-wrap">
@@ -111,7 +91,9 @@ hide_site_header: true
     <div class="profile-header">
       <h2 id="candidate-name">Candidate</h2>
     </div>
-    <table class="profile-table" id="profile-table"></table>
+    <div class="profile-table-shell">
+      <table class="profile-table" id="profile-table"></table>
+    </div>
   </div>
 </div>
 

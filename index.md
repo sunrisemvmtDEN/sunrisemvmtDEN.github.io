@@ -525,10 +525,7 @@ To assess and platform more even more candidates, Sunrise Movement volunteers in
           <article class="endorsed-card">
             <h3 class="endorsed-name">${nameHtml}</h3>
             ${imageHtml}
-            <div class="endorsed-content">
-              <h3 class="endorsed-name">${nameHtml}</h3>
-              <p>${linkifyText(description)}</p>
-            </div>
+            <p class="endorsed-description">${linkifyText(description)}</p>
           </article>
         `;
       })
