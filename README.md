@@ -18,23 +18,19 @@ serve.bat
 
 The preview server includes live-reload, so changes update automatically when you edit files.
 
-## Preferred Data Workflow
+## Ballot Guide Data
 
-Use a checked-in CSV file for the table data.
+The homepage loads its cards from these checked-in CSV files:
 
-1. Export your sheet tab as a CSV file.
-2. Save it into this repo, for example as `data/ballot-guide.csv`.
-3. In `_config.yaml`, set `local_csv_path` to that file path, for example `"/data/ballot-guide.csv"`.
-4. Commit and push the updated CSV whenever the content changes.
+- `data/candidates_endorsed.csv`
+- `data/candidates_recommended.csv`
+- `data/measure_endorsed.csv`
+- `data/measure_recommendation.csv`
+- `data/faq.csv`
 
-This is more reliable than loading directly from Google Sheets and is usually easier to debug.
-
-## Optional Google Sheet Source
-
-1. In Google Sheets, open the tab you want to publish.
-2. Click **File -> Share -> Publish to web**.
-3. Choose that tab and select **Comma-separated values (.csv)**.
-4. Copy the published CSV link.
-5. In `_config.yaml`, set `google_sheet_csv_url` to that link.
-
-If `local_csv_path` is set, the site will use that first. Otherwise it will fall back to `google_sheet_csv_url`.
+Candidate CSVs use `name,url,headshot,description` columns. Measure CSVs use
+`measure title,recommendation,blurb` columns. Recommendation values are
+`Endorse`, `Recommend`, `Abstain`, or `Oppose`. The FAQ CSV uses
+`question,answer` columns.
+Edit the source CSVs in `data/`; Jekyll copies them into `_site/data/` when it
+builds the site.
