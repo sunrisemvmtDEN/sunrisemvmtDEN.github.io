@@ -176,6 +176,7 @@ title: 2026 Ballot Guide
     margin: 0;
     padding: 0.9rem 1rem;
     border-top: 1px solid var(--line);
+    white-space: pre-line;
   }
 
   @media (max-width: 600px) {
