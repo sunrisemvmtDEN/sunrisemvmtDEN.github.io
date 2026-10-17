@@ -28,7 +28,8 @@ The homepage loads its cards from these checked-in CSV files:
 - `data/measure_recommendation.csv`
 - `data/faq.csv`
 
-Candidate CSVs use `name,url,headshot,description` columns. Measure CSVs use
+Candidate CSVs use `name,race,url,headshot,description` columns. The race is
+shown above each candidate's name. Measure CSVs use
 `measure title,recommendation,blurb` columns. Recommendation values are
 `Endorse`, `Recommend`, `Abstain`, or `Oppose`. The FAQ CSV uses
 `question,answer` columns.
