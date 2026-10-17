@@ -77,16 +77,8 @@ title: 2026 Ballot Guide
     color: var(--sunrise-charcoal);
   }
 
-  .candidate-heading {
+  .candidate-name {
     grid-column: 1 / -1;
-  }
-
-  .candidate-race {
-    margin: 0 0 0.2rem;
-    color: var(--sunrise-charcoal);
-    font-size: 1.45rem;
-    line-height: 1.2;
-    font-weight: 600;
   }
 
   .candidate-name a {
@@ -187,7 +179,7 @@ title: 2026 Ballot Guide
       grid-template-columns: 1fr;
     }
 
-    .candidate-heading {
+    .candidate-name {
       grid-column: 1;
     }
 
@@ -375,7 +367,6 @@ title: 2026 Ballot Guide
       .filter((row) => row.some((cell) => String(cell || "").trim() !== ""))
       .map((row) => {
         const name = getValue(row, headers, "name");
-        const race = getValue(row, headers, "race");
         const url = toUrl(getValue(row, headers, "url"));
         const headshot = toUrl(getValue(row, headers, "headshot"));
         const description = getValue(row, headers, "description");
@@ -387,10 +378,7 @@ title: 2026 Ballot Guide
           : "";
 
         return `<article class="candidate-card">
-          <div class="candidate-heading">
-            ${race ? `<p class="candidate-race">${escapeHtml(race)}</p>` : ""}
-            <h3 class="candidate-name">${nameHtml}</h3>
-          </div>
+          <h3 class="candidate-name">${nameHtml}</h3>
           ${imageHtml}
           <p class="candidate-description">${linkifyText(description)}</p>
         </article>`;
