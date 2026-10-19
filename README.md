@@ -33,5 +33,11 @@ shown above each candidate's name. Measure CSVs use
 `measure title,recommendation,blurb` columns. Recommendation values are
 `Endorse`, `Recommend`, `Abstain`, or `Oppose`. The FAQ CSV uses
 `question,answer` columns.
+Measure blurbs can also be bullet lists (thanks Prop 137): put each item on a separate line
+starting with `- ` inside the quoted CSV field. Markdown links work in each item.
+Use `**bold text**` for bold and `*italic text*` for italics in blurb text.
+Paragraphs can appear before, after, or between bullet lists in the same field.
+Use actual line breaks, not literal `\n` text: a blank line starts a new paragraph
+or list, and a single line break within a paragraph is preserved.
 Edit the source CSVs in `data/`; Jekyll copies them into `_site/data/` when it
 builds the site.

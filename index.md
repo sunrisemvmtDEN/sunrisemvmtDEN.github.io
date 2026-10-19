@@ -109,6 +109,14 @@ title: 2026 Ballot Guide
     line-height: 1.55;
   }
 
+  p.measure-blurb {
+    white-space: pre-line;
+  }
+
+  .measure-blurb + .measure-blurb {
+    margin-top: 0.75rem;
+  }
+
   .measure-card {
     padding: 0.85rem 1rem;
   }
@@ -321,16 +329,22 @@ title: 2026 Ballot Guide
     const markdownLinkRegex = /\[([^\]]+)\]\(([^\s)]+)\)/g;
     const urlRegex = /https?:\/\/[^\s<>'"]+/g;
 
+    function formatText(text) {
+      return escapeHtml(text)
+        .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+    }
+
     function linkifyPlainText(text) {
       let html = "";
       let lastIndex = 0;
       let match;
       while ((match = urlRegex.exec(text)) !== null) {
-        html += escapeHtml(text.slice(lastIndex, match.index));
+        html += formatText(text.slice(lastIndex, match.index));
         html += `<a href="${escapeHtml(match[0])}" target="_blank" rel="noopener noreferrer">${escapeHtml(match[0])}</a>`;
         lastIndex = match.index + match[0].length;
       }
-      html += escapeHtml(text.slice(lastIndex)).replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+      html += formatText(text.slice(lastIndex));
       return html;
     }
 
@@ -341,7 +355,7 @@ title: 2026 Ballot Guide
       html += linkifyPlainText(raw.slice(lastIndex, match.index));
       const href = toUrl(match[2]);
       html += href
-        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(match[1])}</a>`
+        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${formatText(match[1])}</a>`
         : escapeHtml(match[0]);
       lastIndex = match.index + match[0].length;
     }
@@ -407,11 +421,31 @@ title: 2026 Ballot Guide
         const title = getValue(row, headers, "measure title");
         const recommendation = getValue(row, headers, "recommendation");
         const blurb = getValue(row, headers, "blurb");
+        const blurbLines = blurb.split(/\r?\n/).map((line) => line.trim());
+        const blocks = [];
+        let startNewBlock = true;
+        for (const line of blurbLines) {
+          if (!line) {
+            startNewBlock = true;
+            continue;
+          }
+          const isList = line.startsWith("- ");
+          const previous = blocks[blocks.length - 1];
+          if (!startNewBlock && previous && previous.isList === isList) {
+            previous.lines.push(line);
+          } else {
+            blocks.push({ isList, lines: [line] });
+          }
+          startNewBlock = false;
+        }
+        const blurbHtml = blocks.map((block) => block.isList
+          ? `<ul class="measure-blurb">${block.lines.map((line) => `<li>${linkifyText(line.slice(2))}</li>`).join("")}</ul>`
+          : `<p class="measure-blurb">${linkifyText(block.lines.join("\n"))}</p>`).join("");
         const recommendationClass = normalizeHeader(recommendation);
         return `<article class="measure-card">
           <h3 class="measure-title">${escapeHtml(title)}</h3>
           <p class="measure-recommendation"><span class="recommendation-badge recommendation-${escapeHtml(recommendationClass)}">${escapeHtml(recommendation)}</span></p>
-          <p class="measure-blurb">${linkifyText(blurb)}</p>
+          ${blurbHtml}
         </article>`;
       });
     target.innerHTML = cards.join("") || `<p class="loading-note">${escapeHtml(emptyMessage)}</p>`;
