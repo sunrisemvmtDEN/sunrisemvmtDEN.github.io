@@ -184,7 +184,15 @@ title: 2026 Ballot Guide
     margin: 0;
     padding: 0.9rem 1rem;
     border-top: 1px solid var(--line);
+  }
+
+  .faq-answer p {
+    margin: 0;
     white-space: pre-line;
+  }
+
+  .faq-answer p + p {
+    margin-top: 0.65rem;
   }
 
   @media (max-width: 600px) {
@@ -463,7 +471,9 @@ title: 2026 Ballot Guide
       .filter((row) => String(row[questionIndex] || "").trim() !== "")
       .map((row) => `<details class="faq-item">
         <summary>${escapeHtml(row[questionIndex])}</summary>
-        <p class="faq-answer">${linkifyText(row[answerIndex] || "")}</p>
+        <div class="faq-answer">${String(row[answerIndex] || "").trim()
+          .split(/\r?\n[ \t]*\r?\n(?:[ \t]*\r?\n)*/)
+          .map((paragraph) => `<p>${linkifyText(paragraph)}</p>`).join("")}</div>
       </details>`);
     target.innerHTML = items.join("") || '<p class="loading-note">No FAQ items found.</p>';
   }

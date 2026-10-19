@@ -33,6 +33,9 @@ shown above each candidate's name. Measure CSVs use
 `measure title,recommendation,blurb` columns. Recommendation values are
 `Endorse`, `Recommend`, `Abstain`, or `Oppose`. The FAQ CSV uses
 `question,answer` columns.
+FAQ answers use a blank line between paragraphs to add a small gap. Single
+line breaks within a paragraph are preserved, and Markdown links, bold, and
+italics are supported.
 Measure blurbs can also be bullet lists (thanks Prop 137): put each item on a separate line
 starting with `- ` inside the quoted CSV field. Markdown links work in each item.
 Use `**bold text**` for bold and `*italic text*` for italics in blurb text.
